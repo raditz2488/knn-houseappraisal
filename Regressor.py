@@ -29,4 +29,26 @@ class Regression(object):
         self.houses = houses
         self.prices = prices
         self.kdtree = KDTree(self.houses)
+
+    def regress(self, house):
+        '''
+        Predicts the price for the house.
+        :param house: pandas.Series with house parameters
+        :return: house price 
+        '''
+        # Get indexes of the k nearest neighbours of the house
+        _, indexes = self.kdtree.query(house, self.k)
+
+        # The indexes are in the prices indexing system. So it can be used to get the prices of the k nearest neighbours
+        k_neighbours_prices = self.prices.iloc[indexes]
+
+        # Find a value using the decided metric
+        price = self.metric(k_neighbours_prices)
+
+        # Return the price else throw an exception
+        if np.isnan(price):
+            raise Exception('Unexpected price')
+        else:
+            return price
+
     
