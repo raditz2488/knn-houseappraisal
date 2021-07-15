@@ -134,7 +134,24 @@ class RegressionTest(object):
 
         return errors
 
+    def plot_error_rates(self):
+        folds_range = range(2, 11)
+        errors_df = pd.DataFrame({'max': 0, 'min': 0}, index=folds_range)
 
+        for folds in folds_range:
+            errors = self.tests(folds)
+            errors_df['max'][folds] = max(errors)
+            errors_df['min'][folds] = min(errors)
+
+        errors_df.plot(title='MAE of KNN over different number of folds')
+        plt.xlabel('#folds')
+        plt.ylabel('MAE')
+        plt.show()
+
+def main():
+    regression_test = RegressionTest()
+    regression_test.load_csv_file('king_county_data_geocoded.csv', 100)
+    regression_test.plot
 
 
 
