@@ -51,4 +51,13 @@ class Regression(object):
         else:
             return price
 
+class RegressionTest(object):
+    '''
+    Read the King's County housing data, calculate and plot the kNN regression error.
+    '''
+
+    def __init__(self):
+        self.houses = None
+        self.prices = None
+
     
