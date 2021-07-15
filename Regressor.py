@@ -22,4 +22,11 @@ class Regression(object):
         self.houses = None
         self.prices = None
 
-    self.
+    def set_data(self, houses, prices):
+        '''
+            Creates a KDTree using houses
+        '''
+        self.houses = houses
+        self.prices = prices
+        self.kdtree = KDTree(self.houses)
+    
