@@ -118,6 +118,22 @@ class RegressionTest(object):
 
         return test_predicted_prices, test_actual_prices
 
+    def tests(self, folds):
+        '''
+        Calculates mean absolute errors for the folds
+        :param folds: how may times the dataset should be split
+        :return: list of error values
+        '''
+        
+        # The proportion to use for test set
+        holdout = 1 / folds
+        errors = []
+        for _ in range(folds):
+            test_predicted_prices, test_actual_prices = self.test_regression(holdout)
+            errors.append(mean_absolute_error(test_actual_prices, test_predicted_prices))
+
+        return errors
+
 
 
 
