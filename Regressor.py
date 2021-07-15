@@ -67,17 +67,58 @@ class RegressionTest(object):
         :param limit: number of rows of file to read
         '''
         houses = pd.read_csv(csv_file, nrows=limit)
+
         # Filter prices column
+        # We dont need to normalize the prices as its not going to be used in distance calculations
         self.prices = houses['AppraisedValue']
 
         # Filter lat, long and SqFtLot columns
         house = houses[['lat', 'long', 'SqFtLot']]
 
-        # Perform mean normalization
+        # Perform mean normalization because it helps in the distance calculations
         # https://towardsdatascience.com/data-normalization-in-machine-learning-395fdec69d02
         houses = (houses - houses.mean()) / (houses.max() - houses.min())
 
         self.houses = houses
+
+    def test_regression(self, holdout):
+        '''
+        Prepares a train and test dataset from the current dataset and calculates regression for the test dataset.
+        :param holdout part of the data to use as test data
+        :return tuple(predicted_price, actual_price)
+        '''
+        # Filter the test and train dataset
+        # Find the number of records in test dataset
+        test_dataset_n = int(round(len(self.houses) * holdout))
+        # Find indexes for the test dataset
+        test_indexes = random.sample(self.houses.index, test_dataset_n)    
+
+        # Find indexes for the train dataset
+        train_indexes = set(self.houses.index) - set(test_indexes)
+
+        # Prepare test dataset using indexes
+        test_houses = self.houses.ix[test_indexes]
+
+        # Prepare train dataset using indexes
+        train_houses = self.houses.ix[train_indexes]
+        train_prices = self.prices.ix[train_indexes]
+
+        # Prepare Regression object on trian set
+        regression = Regression()
+        regression.set_data(train_houses, train_prices)
+
+        # Prepare lists to capture predicted and actual values for the test set
+        test_predicted_prices = []
+        test_actual_prices = []
+
+        # Predict values on test set using regression
+        for idx, house in test_houses.iterrows():
+            test_predicted_prices.append(regression.regress(house))
+            test_actual_prices.append(self.prices.ix[idx])
+
+        return test_predicted_prices, test_actual_prices
+
+
 
 
 
