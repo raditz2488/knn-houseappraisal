@@ -73,7 +73,7 @@ class RegressionTest(object):
         self.prices = houses['AppraisedValue']
 
         # Filter lat, long and SqFtLot columns
-        house = houses[['lat', 'long', 'SqFtLot']]
+        houses = houses[['lat', 'long', 'SqFtLot']]
 
         # Perform mean normalization because it helps in the distance calculations
         # https://towardsdatascience.com/data-normalization-in-machine-learning-395fdec69d02
@@ -91,17 +91,17 @@ class RegressionTest(object):
         # Find the number of records in test dataset
         test_dataset_n = int(round(len(self.houses) * holdout))
         # Find indexes for the test dataset
-        test_indexes = random.sample(self.houses.index, test_dataset_n)    
+        test_indexes = random.sample(self.houses.index.tolist(), test_dataset_n)    
 
         # Find indexes for the train dataset
-        train_indexes = set(self.houses.index) - set(test_indexes)
+        train_indexes = list(set(self.houses.index.tolist()) - set(test_indexes))
 
         # Prepare test dataset using indexes
-        test_houses = self.houses.ix[test_indexes]
+        test_houses = self.houses.iloc[test_indexes]
 
         # Prepare train dataset using indexes
-        train_houses = self.houses.ix[train_indexes]
-        train_prices = self.prices.ix[train_indexes]
+        train_houses = self.houses.iloc[train_indexes]
+        train_prices = self.prices.iloc[train_indexes]
 
         # Prepare Regression object on trian set
         regression = Regression()
@@ -114,7 +114,7 @@ class RegressionTest(object):
         # Predict values on test set using regression
         for idx, house in test_houses.iterrows():
             test_predicted_prices.append(regression.regress(house))
-            test_actual_prices.append(self.prices.ix[idx])
+            test_actual_prices.append(self.prices.iloc[idx])
 
         return test_predicted_prices, test_actual_prices
 
@@ -150,7 +150,7 @@ class RegressionTest(object):
 
 def main():
     regression_test = RegressionTest()
-    regression_test.load_csv_file('king_county_data_geocoded.csv', 100)
+    regression_test.load_csv_file('king_county_data_geocoded.csv',4000)
     regression_test.plot_error_rates()
 
 if __name__ == '__main__':
