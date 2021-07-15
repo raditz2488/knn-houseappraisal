@@ -60,4 +60,26 @@ class RegressionTest(object):
         self.houses = None
         self.prices = None
 
+    def load_csv_file(self, csv_file, limit=None):
+        '''
+        Loads CSV file with houses data
+        :param csv_file: CSV file name
+        :param limit: number of rows of file to read
+        '''
+        houses = pd.read_csv(csv_file, nrows=limit)
+        # Filter prices column
+        self.prices = houses['AppraisedValue']
+
+        # Filter lat, long and SqFtLot columns
+        house = houses[['lat', 'long', 'SqFtLot']]
+
+        # Perform mean normalization
+        # https://towardsdatascience.com/data-normalization-in-machine-learning-395fdec69d02
+        houses = (houses - houses.mean()) / (houses.max() - houses.min())
+
+        self.houses = houses
+
+
+
+
     
